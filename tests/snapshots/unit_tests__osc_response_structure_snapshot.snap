@@ -1,0 +1,10 @@
+---
+source: tests/unit_tests.rs
+expression: response
+---
+{
+  "address": "/live/song/get/tempo",
+  "args": [
+    120.0
+  ]
+}

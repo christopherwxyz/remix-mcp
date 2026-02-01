@@ -1,0 +1,5 @@
+---
+source: tests/unit_tests.rs
+expression: "format!(\"{:?}\", msg)"
+---
+OscMessage { addr: "/live/track/set/volume", args: [Int(0), Float(0.85)] }

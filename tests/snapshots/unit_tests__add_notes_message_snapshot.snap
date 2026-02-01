@@ -1,0 +1,5 @@
+---
+source: tests/unit_tests.rs
+expression: "format!(\"{:?}\", msg)"
+---
+OscMessage { addr: "/live/clip/add/notes", args: [Int(0), Int(0), Int(60), Float(0.0), Float(1.0), Int(100), Int(0)] }

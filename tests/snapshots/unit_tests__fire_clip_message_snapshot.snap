@@ -1,0 +1,5 @@
+---
+source: tests/unit_tests.rs
+expression: "format!(\"{:?}\", msg)"
+---
+OscMessage { addr: "/live/clip_slot/fire", args: [Int(0), Int(0)] }

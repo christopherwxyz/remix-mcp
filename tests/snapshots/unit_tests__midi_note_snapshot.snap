@@ -1,0 +1,27 @@
+---
+source: tests/unit_tests.rs
+expression: notes
+---
+[
+  {
+    "duration": 0.5,
+    "mute": false,
+    "pitch": 60,
+    "start": 0.0,
+    "velocity": 100
+  },
+  {
+    "duration": 0.5,
+    "mute": false,
+    "pitch": 64,
+    "start": 0.5,
+    "velocity": 90
+  },
+  {
+    "duration": 0.5,
+    "mute": false,
+    "pitch": 67,
+    "start": 1.0,
+    "velocity": 95
+  }
+]

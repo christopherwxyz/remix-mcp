@@ -1,0 +1,14 @@
+---
+source: tests/unit_tests.rs
+expression: response
+---
+{
+  "is_midi": true,
+  "is_playing": false,
+  "length": 16.0,
+  "loop_end": 16.0,
+  "loop_start": 0.0,
+  "name": "Melody A",
+  "scene": 0,
+  "track": 0
+}

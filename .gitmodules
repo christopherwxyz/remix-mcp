@@ -1,0 +1,3 @@
+[submodule "AbletonOSC"]
+	path = AbletonOSC
+	url = https://github.com/ideoforms/AbletonOSC.git

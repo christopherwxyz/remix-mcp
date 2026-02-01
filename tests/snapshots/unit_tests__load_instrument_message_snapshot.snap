@@ -1,0 +1,5 @@
+---
+source: tests/unit_tests.rs
+expression: "format!(\"{:?}\", msg)"
+---
+OscMessage { addr: "/live/browser/load_instrument", args: [String("Drift")] }

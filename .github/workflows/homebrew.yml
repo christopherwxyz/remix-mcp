@@ -1,0 +1,119 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v0.1.0)'
+        required: true
+
+jobs:
+  update-tap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+
+      - name: Wait for release assets
+        run: sleep 30
+
+      - name: Download and hash release assets
+        id: hashes
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          BASE_URL="https://github.com/christopherwxyz/remix-mcp/releases/download/${TAG}"
+
+          echo "Downloading release assets..."
+
+          curl -sLO "${BASE_URL}/remix-mcp-aarch64-apple-darwin.tar.gz"
+          curl -sLO "${BASE_URL}/remix-mcp-x86_64-apple-darwin.tar.gz"
+          curl -sLO "${BASE_URL}/remix-mcp-x86_64-unknown-linux-gnu.tar.gz"
+
+          echo "sha_macos_arm64=$(sha256sum remix-mcp-aarch64-apple-darwin.tar.gz | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "sha_macos_x86=$(sha256sum remix-mcp-x86_64-apple-darwin.tar.gz | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "sha_linux_x86=$(sha256sum remix-mcp-x86_64-unknown-linux-gnu.tar.gz | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: christopherwxyz/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Update formula
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+          SHA_MACOS_ARM64: ${{ steps.hashes.outputs.sha_macos_arm64 }}
+          SHA_MACOS_X86: ${{ steps.hashes.outputs.sha_macos_x86 }}
+          SHA_LINUX_X86: ${{ steps.hashes.outputs.sha_linux_x86 }}
+        run: |
+          mkdir -p homebrew-tap/Formula
+          cat > homebrew-tap/Formula/remix-mcp.rb << EOF
+          # typed: false
+          # frozen_string_literal: true
+
+          class RemixMcp < Formula
+            desc "MCP server for controlling Ableton Live via OSC"
+            homepage "https://github.com/christopherwxyz/remix-mcp"
+            version "${VERSION}"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "https://github.com/christopherwxyz/remix-mcp/releases/download/${TAG}/remix-mcp-aarch64-apple-darwin.tar.gz"
+                sha256 "${SHA_MACOS_ARM64}"
+              end
+              on_intel do
+                url "https://github.com/christopherwxyz/remix-mcp/releases/download/${TAG}/remix-mcp-x86_64-apple-darwin.tar.gz"
+                sha256 "${SHA_MACOS_X86}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/christopherwxyz/remix-mcp/releases/download/${TAG}/remix-mcp-x86_64-unknown-linux-gnu.tar.gz"
+                sha256 "${SHA_LINUX_X86}"
+              end
+            end
+
+            def install
+              bin.install "remix-mcp"
+            end
+
+            def caveats
+              <<~EOS
+                To install the AbletonOSC Remote Script, run:
+                  remix-mcp install
+
+                Then restart Ableton Live and enable AbletonOSC in:
+                  Preferences > Link/Tempo/MIDI > Control Surface
+              EOS
+            end
+
+            test do
+              assert_match version.to_s, shell_output("\#{bin}/remix-mcp --version")
+            end
+          end
+          EOF
+          # Remove leading spaces from heredoc
+          sed -i 's/^          //' homebrew-tap/Formula/remix-mcp.rb
+
+      - name: Commit and push
+        run: |
+          cd homebrew-tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/remix-mcp.rb
+          git commit -m "remix-mcp ${{ steps.version.outputs.version }}"
+          git push

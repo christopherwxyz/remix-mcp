@@ -1,0 +1,36 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "remix-mcp"
+version = "0.1.0"
+description = "MCP server for controlling Ableton Live via OSC"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["ableton", "mcp", "osc", "music", "live", "daw", "midi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Rust",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: MIDI",
+]
+
+[project.urls]
+Homepage = "https://github.com/christopherwxyz/remix-mcp"
+Repository = "https://github.com/christopherwxyz/remix-mcp"
+Issues = "https://github.com/christopherwxyz/remix-mcp/issues"
+
+[tool.maturin]
+# Build as a standalone binary (no Python bindings)
+bindings = "bin"
+# Strip symbols for smaller binaries
+strip = true

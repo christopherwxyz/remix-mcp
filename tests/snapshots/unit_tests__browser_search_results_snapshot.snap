@@ -1,0 +1,21 @@
+---
+source: tests/unit_tests.rs
+expression: results
+---
+{
+  "query": "reverb",
+  "results": [
+    {
+      "category": "Audio Effects",
+      "name": "Reverb"
+    },
+    {
+      "category": "Audio Effects",
+      "name": "Convolution Reverb"
+    },
+    {
+      "category": "Max for Live",
+      "name": "Reverb Tail"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+---
+source: tests/unit_tests.rs
+expression: response
+---
+{
+  "arm": true,
+  "color": 16750848,
+  "mute": false,
+  "name": "Lead Synth",
+  "panning": 0.0,
+  "solo": false,
+  "track_index": 0,
+  "volume": 0.85
+}

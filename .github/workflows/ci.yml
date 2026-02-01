@@ -11,13 +11,24 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  commits:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: webiny/action-conventional-commits@v1.3.0
+
   fmt:
     name: Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: stable
           components: rustfmt
       - run: cargo fmt --all -- --check
 
@@ -28,8 +39,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: stable
           components: clippy
       - uses: Swatinem/rust-cache@v2
       - run: cargo clippy --all-targets -- -D warnings
@@ -41,7 +53,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@nextest
       - run: cargo nextest run
@@ -62,6 +76,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo build --release

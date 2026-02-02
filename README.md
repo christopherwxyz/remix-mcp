@@ -3,6 +3,9 @@
 A Rust MCP server that enables AI assistants to control Ableton Live via OSC.
 
 [![CI](https://github.com/christopherwxyz/remix-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherwxyz/remix-mcp/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-remix--mcp-blue)](https://remix-mcp-docs.pages.dev)
+
+📖 **[Documentation](https://remix-mcp-docs.pages.dev)**
 
 ## Features
 
@@ -76,7 +79,7 @@ Ask Claude things like:
 - "Add an arpeggiator to the selected track"
 - "Search the browser for bass sounds"
 
-See [docs/examples.md](docs/examples.md) for more examples.
+See the [documentation](https://remix-mcp-docs.pages.dev/examples) for more examples.
 
 ## Tools
 
@@ -125,7 +128,7 @@ Samplers need samples loaded. Use `load_default_instrument` to load Drift (a syn
 
 ## Development
 
-See [CLAUDE.md](CLAUDE.md) for development guidelines.
+See the [contributing guide](https://remix-mcp-docs.pages.dev/contributing) for development guidelines.
 
 ## License
 

@@ -1,0 +1,219 @@
+# Browser Tools
+
+Load instruments, effects, samples, and presets from Ableton's browser.
+
+## Loading Instruments
+
+### `load_default_instrument`
+Load the default instrument (Drift synth).
+
+:::tip
+Always use this for MIDI tracks that need to produce sound immediately. Drift is a synthesizer that works without loading samples.
+:::
+
+### `load_instrument`
+Load an instrument by name.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Instrument name |
+
+**Examples**:
+```
+load_instrument("Analog")
+load_instrument("Wavetable")
+load_instrument("Operator")
+load_instrument("Collision")
+```
+
+### `load_drum_kit`
+Load a drum kit.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string? | Kit name (optional) |
+
+## Loading Effects
+
+### `load_audio_effect`
+Load an audio effect.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Effect name |
+
+**Examples**:
+```
+load_audio_effect("Reverb")
+load_audio_effect("Delay")
+load_audio_effect("Compressor")
+load_audio_effect("EQ Eight")
+load_audio_effect("Auto Filter")
+```
+
+### `load_midi_effect`
+Load a MIDI effect.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Effect name |
+
+**Examples**:
+```
+load_midi_effect("Arpeggiator")
+load_midi_effect("Chord")
+load_midi_effect("Scale")
+load_midi_effect("Random")
+```
+
+### `load_default_audio_effect`
+Load the default audio effect (Reverb).
+
+### `load_default_midi_effect`
+Load the default MIDI effect (Arpeggiator).
+
+### `list_audio_effects`
+List all available audio effects.
+
+### `list_midi_effects`
+List all available MIDI effects.
+
+## Browsing
+
+### `search_browser`
+Search the browser for items.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `query` | string | Search query |
+
+### `browse`
+Browse a category.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string | Category name |
+
+Categories: `Sounds`, `Drums`, `Instruments`, `Audio Effects`, `MIDI Effects`, `Max for Live`, `Plug-ins`, `Clips`, `Samples`
+
+### `browse_path`
+Browse a specific path within a category.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string | Category |
+| `path` | string | Path within category |
+
+## Samples & Clips
+
+### `load_sample`
+Load a sample into Simpler.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Sample name |
+
+### `load_clip`
+Load an audio/MIDI clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Clip name |
+
+### `list_samples`
+List available samples.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string? | Filter by category |
+
+### `list_clips`
+List available clips.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string? | Filter by category |
+
+## Plugins
+
+### `load_plugin`
+Load a VST/AU plugin.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Plugin name |
+
+### `list_plugins`
+List available plugins.
+
+### `load_max_device`
+Load a Max for Live device.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Device name |
+
+### `list_max_devices`
+List available Max for Live devices.
+
+## User Library
+
+### `list_user_presets`
+List user presets.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string? | Filter by category |
+
+### `load_user_preset`
+Load a user preset.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | string | Preset path |
+
+## Hotswap & Preview
+
+### `hotswap_start`
+Enter hotswap mode for a device.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device index |
+
+### `hotswap_load`
+Load an item via hotswap.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Item to load |
+
+### `preview_sample`
+Preview a sample (plays in browser).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Sample name |
+
+### `stop_preview`
+Stop sample preview.
+
+## Common Workflows
+
+### Create a Complete Synth Track
+
+```
+1. create_midi_track()
+2. load_default_instrument()     // Drift
+3. load_audio_effect("Reverb")
+4. load_audio_effect("Delay")
+5. load_midi_effect("Arpeggiator")
+```
+
+### Find and Load a Bass Sound
+
+```
+1. search_browser("bass synth")
+2. load_instrument("Bass")       // Or specific result
+```

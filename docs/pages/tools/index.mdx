@@ -1,0 +1,83 @@
+# Tools Reference
+
+remix-mcp provides **266 tools** for controlling Ableton Live. This section documents all available tools organized by category.
+
+## Overview
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| [Transport](/tools/transport) | 10 | Playback control: play, stop, record, tempo |
+| [Tracks](/tools/tracks) | 59 | Create, modify, route audio/MIDI tracks |
+| [Clips](/tools/clips) | 65 | Create, fire, edit clips and MIDI notes |
+| [Scenes](/tools/scenes) | 19 | Scene management and triggering |
+| [Devices](/tools/devices) | 10 | Control instruments and effects |
+| [Song](/tools/song) | 56 | Global settings, undo/redo, loops |
+| [Browser](/tools/browser) | 29 | Load instruments, effects, samples |
+| [View](/tools/view) | 8 | Selection and navigation |
+| [Cue Points](/tools/cue-points) | 5 | Marker navigation |
+
+## How Tools Work
+
+Tools are invoked by Claude through the MCP protocol. Each tool:
+
+1. Receives parameters from Claude
+2. Sends OSC messages to AbletonOSC
+3. Returns results or confirmation
+
+### Example Flow
+
+When you ask Claude to "set the tempo to 128 BPM":
+
+```
+Claude: "I'll set the tempo to 128 BPM"
+     |
+     v
+[MCP: call set_tempo(tempo: 128)]
+     |
+     v
+[OSC: /live/song/set/tempo 128.0]
+     |
+     v
+[Ableton: tempo changes to 128]
+     |
+     v
+Claude: "Done! The tempo is now 128 BPM"
+```
+
+## Tool Naming Conventions
+
+Tools follow consistent naming patterns:
+
+| Pattern | Purpose | Example |
+|---------|---------|---------|
+| `get_*` | Read current value | `get_tempo`, `get_track_volume` |
+| `set_*` | Change a value | `set_tempo`, `set_track_volume` |
+| `create_*` | Create new item | `create_midi_track`, `create_clip` |
+| `delete_*` | Remove item | `delete_track`, `delete_clip` |
+| `fire_*` | Trigger playback | `fire_clip`, `fire_scene` |
+| `list_*` | Get all items | `list_tracks`, `list_devices` |
+| `load_*` | Load from browser | `load_instrument`, `load_audio_effect` |
+
+## Common Parameters
+
+Many tools share common parameter types:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track number (0-indexed) |
+| `clip_index` | integer | Clip slot number (0-indexed) |
+| `scene_index` | integer | Scene number (0-indexed) |
+| `device_index` | integer | Device chain position (0-indexed) |
+
+:::tip
+All indices are **0-based**. Track 1 in Ableton's UI is `track_index: 0`.
+:::
+
+## Error Handling
+
+Tools return errors for invalid operations:
+
+- **InvalidParameter**: Bad input (e.g., negative index)
+- **InvalidResponse**: Unexpected response from Ableton
+- **Timeout**: No response within 5 seconds
+- **Network**: Connection issues

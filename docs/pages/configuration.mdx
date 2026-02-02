@@ -1,0 +1,101 @@
+# Configuration
+
+## Claude Desktop
+
+Add remix-mcp to your Claude Desktop configuration:
+
+### Location
+
+| Platform | Config Path |
+|----------|-------------|
+| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+
+### Basic Configuration
+
+```json
+{
+  "mcpServers": {
+    "ableton": {
+      "command": "uvx",
+      "args": ["remix-mcp"]
+    }
+  }
+}
+```
+
+### Using Binary Directly
+
+If you installed the binary manually:
+
+```json
+{
+  "mcpServers": {
+    "ableton": {
+      "command": "/path/to/remix-mcp"
+    }
+  }
+}
+```
+
+## Claude Code
+
+Add the server with a single command:
+
+```bash
+claude mcp add ableton -- uvx remix-mcp
+```
+
+Or with a local binary:
+
+```bash
+claude mcp add ableton -- /path/to/remix-mcp
+```
+
+List configured servers:
+
+```bash
+claude mcp list
+```
+
+Remove a server:
+
+```bash
+claude mcp remove ableton
+```
+
+## CLI Commands
+
+remix-mcp provides several commands:
+
+```bash
+# Start MCP server (default, used by Claude)
+remix-mcp serve
+
+# Install AbletonOSC Remote Script
+remix-mcp install
+
+# Force reinstall
+remix-mcp install --force
+
+# Check installation status
+remix-mcp status
+
+# Show help
+remix-mcp --help
+```
+
+## Environment Variables
+
+Currently, remix-mcp uses hardcoded defaults for OSC communication:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Send Port | 11000 | Port to send OSC to Ableton |
+| Receive Port | 11001 | Port to receive OSC from Ableton |
+| Host | 127.0.0.1 | Localhost only |
+| Timeout | 5s | Response timeout |
+
+:::note
+Custom port configuration is planned for a future release.
+:::

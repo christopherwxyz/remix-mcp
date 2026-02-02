@@ -1,0 +1,144 @@
+# Song Tools
+
+Global song settings, undo/redo, loop controls, and more.
+
+## Undo/Redo
+
+### `undo`
+Undo the last action.
+
+### `redo`
+Redo the last undone action.
+
+### `can_undo`
+Check if undo is available.
+
+**Returns**: `boolean`
+
+### `can_redo`
+Check if redo is available.
+
+**Returns**: `boolean`
+
+## Loop Settings
+
+### `get_loop` / `set_loop`
+Get or set loop enabled state.
+
+### `get_loop_start` / `set_loop_start`
+Get or set loop start position (in beats).
+
+### `get_loop_length` / `set_loop_length`
+Get or set loop length (in beats).
+
+**Example**: Set up an 8-bar loop starting at bar 5
+```
+set_loop_start(16.0)    // Beat 16 = bar 5
+set_loop_length(32.0)   // 32 beats = 8 bars
+set_loop(true)          // Enable loop
+```
+
+## Time Signature
+
+### `get_signature_numerator` / `set_signature_numerator`
+Get or set time signature numerator (beats per bar).
+
+### `get_signature_denominator` / `set_signature_denominator`
+Get or set time signature denominator (beat unit).
+
+**Example**: Set to 6/8 time
+```
+set_signature_numerator(6)
+set_signature_denominator(8)
+```
+
+## Quantization
+
+### `get_quantization`
+Get global quantization value.
+
+**Returns**: Quantization setting (e.g., "1 Bar", "1/4", "1/8")
+
+### `set_quantization`
+Set global quantization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `value` | integer | Quantization index |
+
+Common values:
+- 0 = None
+- 1 = 8 Bars
+- 2 = 4 Bars
+- 3 = 2 Bars
+- 4 = 1 Bar
+- 5 = 1/2
+- 6 = 1/4
+- 7 = 1/8
+- 8 = 1/16
+
+## Groove
+
+### `get_groove_amount` / `set_groove_amount`
+Get or set global groove amount (0.0 - 1.0).
+
+## Metronome
+
+### `get_metronome` / `set_metronome`
+Get or set metronome on/off.
+
+## Song Position
+
+### `get_current_beat`
+Get current playback position in beats.
+
+### `jump_to_beat`
+Jump to a specific beat position.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `beat` | float | Beat position |
+
+### `jump_to_bar`
+Jump to a specific bar.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `bar` | integer | Bar number (1-indexed) |
+
+## Master Track
+
+### `get_master_volume` / `set_master_volume`
+Get or set master track volume.
+
+### `get_master_pan` / `set_master_pan`
+Get or set master track pan.
+
+## Song Info
+
+### `get_song_name`
+Get the song/project name.
+
+### `get_song_length`
+Get total song length in beats.
+
+## Common Workflows
+
+### Set Up a Practice Loop
+
+```
+1. set_tempo(100)           // Slower tempo
+2. set_loop_start(0)        // From beginning
+3. set_loop_length(16)      // 4 bars
+4. set_loop(true)           // Enable
+5. set_metronome(true)      // Turn on click
+6. play()                   // Start practicing
+```
+
+### Quick Arrangement Check
+
+```
+1. set_loop(false)          // Disable loop
+2. jump_to_beat(0)          // Go to start
+3. play()                   // Listen through
+```

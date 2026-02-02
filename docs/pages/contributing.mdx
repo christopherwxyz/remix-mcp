@@ -1,0 +1,152 @@
+# Contributing
+
+Guidelines for contributing to remix-mcp.
+
+## Development Setup
+
+### Prerequisites
+
+- Rust (latest stable)
+- Ableton Live (for integration tests)
+- pnpm (for docs)
+
+### Clone & Build
+
+```bash
+git clone --recursive https://github.com/christopherwxyz/remix-mcp
+cd remix-mcp
+cargo build
+```
+
+The `--recursive` flag is important to include the AbletonOSC submodule.
+
+### Running Tests
+
+```bash
+# Unit tests (no Ableton required)
+cargo test
+
+# Faster test runner
+cargo nextest run
+
+# Integration tests (requires Ableton + AbletonOSC)
+cargo test --test integration -- --ignored --test-threads=1
+```
+
+### Linting
+
+```bash
+cargo clippy
+cargo fmt
+cargo deny check
+```
+
+## Adding a New Tool
+
+Tools use rmcp's procedural macros. Here's the pattern:
+
+### 1. Define Parameters (if needed)
+
+In `src/types/tool_params.rs`:
+
+```rust
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct MyToolParams {
+    #[schemars(description = "Description of the parameter")]
+    pub my_param: i32,
+}
+```
+
+### 2. Implement the Tool
+
+In the appropriate file under `src/tools/`:
+
+```rust
+#[tool_router(router = category_router, vis = "pub")]
+impl AbletonServer {
+    #[tool(description = "Description of what the tool does")]
+    pub async fn my_tool(
+        &self,
+        Parameters(params): Parameters<MyToolParams>,
+    ) -> Result<String, Error> {
+        // Send OSC and handle response
+        self.osc.send("/live/path", vec![
+            OscType::Int(params.my_param)
+        ]).await?;
+
+        Ok("Success".to_string())
+    }
+}
+```
+
+### 3. Register the Router
+
+In `src/server.rs`, ensure the router is composed:
+
+```rust
+router.merge(category_router());
+```
+
+## Code Style
+
+- Use `rustfmt` defaults
+- Follow Clippy recommendations
+- Prefer `thiserror` for error types
+- Use `tracing` for logging
+- Write tests for new functionality
+
+## OSC Communication Patterns
+
+### Send Only (Actions)
+
+```rust
+self.osc.send("/live/song/start_playing", vec![]).await?;
+```
+
+### Query Single Value
+
+```rust
+let tempo: f32 = self.osc.query("/live/song/get/tempo", vec![]).await?;
+```
+
+### Query Multiple Values
+
+```rust
+let packets = self.osc.query_all("/live/track/get/all", vec![]).await?;
+```
+
+## Error Handling
+
+Use appropriate error variants:
+
+```rust
+// Bad user input
+Error::InvalidParameter("track_index must be >= 0".into())
+
+// Unexpected response
+Error::InvalidResponse("Expected float, got string".into())
+
+// Connection issues
+Error::Timeout
+Error::Network(e)
+```
+
+## Documentation
+
+When adding tools, update:
+
+1. Tool count in `CLAUDE.md`
+2. Tool documentation in `docs/pages/tools/`
+3. Examples if applicable
+
+## Pull Request Process
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a PR with a clear description
+
+## Questions?
+
+Open an issue on [GitHub](https://github.com/christopherwxyz/remix-mcp/issues).

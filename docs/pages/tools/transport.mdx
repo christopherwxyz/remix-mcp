@@ -1,0 +1,72 @@
+# Transport Tools
+
+Control playback, recording, and tempo.
+
+## Playback
+
+### `play`
+Start playback from the current position.
+
+### `stop`
+Stop playback.
+
+### `continue_playing`
+Continue playback from where it stopped.
+
+### `stop_playing`
+Stop playback and return to start.
+
+## Recording
+
+### `start_recording`
+Start recording (arms selected tracks if needed).
+
+### `stop_recording`
+Stop recording.
+
+### `is_playing`
+Returns whether playback is active.
+
+**Returns**: `boolean`
+
+### `is_recording`
+Returns whether recording is active.
+
+**Returns**: `boolean`
+
+## Tempo
+
+### `get_tempo`
+Get the current tempo in BPM.
+
+**Returns**: `float` (e.g., `120.0`)
+
+### `set_tempo`
+Set the tempo.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `tempo` | float | Tempo in BPM (20.0 - 999.0) |
+
+**Example**:
+```
+set_tempo(tempo: 128.0)
+```
+
+## Common Workflows
+
+### Start a Session
+
+```
+1. set_tempo(120)      // Set your tempo
+2. play()              // Start playback
+```
+
+### Record a Performance
+
+```
+1. arm_track(0)        // Arm track for recording
+2. start_recording()   // Begin recording
+3. // ... perform ...
+4. stop_recording()    // Stop when done
+```

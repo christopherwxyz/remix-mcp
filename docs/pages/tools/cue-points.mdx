@@ -1,0 +1,72 @@
+# Cue Point Tools
+
+Navigate using cue points (markers) in the arrangement.
+
+## Listing Cue Points
+
+### `list_cue_points`
+Get all cue points in the song.
+
+**Returns**: Array of cue points with names and positions.
+
+## Navigation
+
+### `jump_to_cue_point`
+Jump playback to a cue point.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `cue_index` | integer | Cue point index |
+
+### `jump_to_next_cue_point`
+Jump to the next cue point from current position.
+
+### `jump_to_previous_cue_point`
+Jump to the previous cue point from current position.
+
+## Creating Cue Points
+
+### `create_cue_point`
+Create a cue point at the current position.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string? | Optional name |
+
+### `delete_cue_point`
+Delete a cue point.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `cue_index` | integer | Cue point to delete |
+
+## Common Workflows
+
+### Mark Song Sections
+
+```
+1. jump_to_beat(0)
+2. create_cue_point("Intro")
+3. jump_to_beat(32)
+4. create_cue_point("Verse 1")
+5. jump_to_beat(64)
+6. create_cue_point("Chorus")
+```
+
+### Navigate During Playback
+
+```
+1. play()
+2. // Listen to intro...
+3. jump_to_next_cue_point()  // Skip to verse
+4. // Listen to verse...
+5. jump_to_next_cue_point()  // Skip to chorus
+```
+
+### Quick Section Review
+
+```
+1. list_cue_points()         // See all markers
+2. jump_to_cue_point(2)      // Jump to specific section
+3. play()                    // Listen from there
+```

@@ -1,0 +1,149 @@
+# Track Tools
+
+Create and control audio and MIDI tracks.
+
+## Creating Tracks
+
+### `create_audio_track`
+Create a new audio track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `index` | integer? | Position (-1 = end) |
+
+**Returns**: Track index of the new track.
+
+### `create_midi_track`
+Create a new MIDI track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `index` | integer? | Position (-1 = end) |
+
+**Returns**: Track index of the new track.
+
+### `create_return_track`
+Create a new return track.
+
+### `delete_track`
+Delete a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track to delete |
+
+### `duplicate_track`
+Duplicate a track with all its clips and devices.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track to duplicate |
+
+## Track Info
+
+### `list_tracks`
+Get information about all tracks.
+
+**Returns**: Array of track info objects.
+
+### `get_track_name`
+Get a track's name.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+
+### `set_track_name`
+Set a track's name.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `name` | string | New name |
+
+## Volume & Pan
+
+### `get_track_volume`
+Get track volume (0.0 - 1.0).
+
+### `set_track_volume`
+Set track volume.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `volume` | float | Volume (0.0 - 1.0) |
+
+### `get_track_pan`
+Get track pan (-1.0 left to 1.0 right).
+
+### `set_track_pan`
+Set track pan.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `pan` | float | Pan (-1.0 to 1.0) |
+
+## Mute, Solo, Arm
+
+### `get_track_mute` / `set_track_mute`
+Get or set track mute state.
+
+### `get_track_solo` / `set_track_solo`
+Get or set track solo state.
+
+### `get_track_arm` / `set_track_arm`
+Get or set track arm state (for recording).
+
+### `arm_track`
+Convenience method to arm a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+
+## Sends
+
+### `get_track_send`
+Get send level to a return track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Source track |
+| `send_index` | integer | Return track index |
+
+### `set_track_send`
+Set send level.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Source track |
+| `send_index` | integer | Return track index |
+| `value` | float | Send level (0.0 - 1.0) |
+
+## Routing
+
+### `get_track_input_routing` / `set_track_input_routing`
+Control where track receives input from.
+
+### `get_track_output_routing` / `set_track_output_routing`
+Control where track sends output to.
+
+## Common Workflows
+
+### Create a Synth Track
+
+```
+1. create_midi_track()           // Creates at index N
+2. load_default_instrument()     // Loads Drift synth
+3. set_track_name(N, "Lead")     // Name it
+```
+
+### Set Up Sends
+
+```
+1. create_return_track()         // Create return
+2. load_audio_effect("Reverb")   // Add reverb to return
+3. set_track_send(0, 0, 0.5)     // Send from track 0
+```

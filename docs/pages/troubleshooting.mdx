@@ -1,0 +1,139 @@
+# Troubleshooting
+
+Common issues and their solutions.
+
+## Connection Issues
+
+### Connection Timeout
+
+**Symptoms**: Claude reports timeout or cannot connect to Ableton.
+
+**Solutions**:
+
+1. **Check Ableton is running** - The MCP server needs Ableton Live open and running.
+
+2. **Verify AbletonOSC is enabled**:
+   - Open Preferences (`Cmd+,` / `Ctrl+,`)
+   - Go to Link/Tempo/MIDI
+   - Ensure AbletonOSC is selected under Control Surface
+
+3. **Check ports are free** - Ports 11000 and 11001 must not be used by other apps:
+   ```bash
+   # macOS/Linux
+   lsof -i :11000
+   lsof -i :11001
+
+   # Windows
+   netstat -ano | findstr :11000
+   ```
+
+4. **Restart both apps** - Sometimes a clean restart of both Ableton and Claude fixes connection issues.
+
+### AbletonOSC Not in Control Surface List
+
+**Symptom**: AbletonOSC doesn't appear in the dropdown.
+
+**Solutions**:
+
+1. **Run the installer**:
+   ```bash
+   remix-mcp install
+   ```
+
+2. **Restart Ableton** - Required after installing new Remote Scripts.
+
+3. **Check installation**:
+   ```bash
+   remix-mcp status
+   ```
+
+4. **Verify the path** - Ensure the Remote Scripts folder exists:
+   - macOS: `~/Music/Ableton/User Library/Remote Scripts/AbletonOSC/`
+   - Windows: `%USERPROFILE%\Documents\Ableton\User Library\Remote Scripts\AbletonOSC\`
+
+## Audio Issues
+
+### No Sound from MIDI Tracks
+
+**Symptom**: MIDI notes are created but no audio plays.
+
+**Causes & Solutions**:
+
+1. **Empty sampler loaded** - Samplers need samples to make sound:
+   ```
+   # Use a synth instead
+   load_default_instrument
+   ```
+
+2. **Track not armed** - The track may need to be armed for monitoring:
+   ```
+   arm_track(track_index)
+   ```
+
+3. **Volume at zero** - Check track and master volume:
+   ```
+   get_track_volume(track_index)
+   set_track_volume(track_index, 0.85)
+   ```
+
+4. **Track muted** - Unmute the track:
+   ```
+   set_track_mute(track_index, false)
+   ```
+
+### Synthesizers vs Samplers
+
+Remember the difference:
+
+| Type | Examples | Works Immediately? |
+|------|----------|-------------------|
+| Synths | Drift, Analog, Wavetable, Operator | Yes |
+| Samplers | Simpler, Sampler, Drum Rack | No (need samples) |
+
+**Always prefer synthesizers** for programmatic track creation.
+
+## Claude Configuration
+
+### Server Not Appearing in Claude
+
+**Claude Desktop**:
+
+1. Check config file location:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. Verify JSON syntax is valid
+
+3. Restart Claude Desktop after config changes
+
+**Claude Code**:
+
+```bash
+# List configured servers
+claude mcp list
+
+# Re-add if missing
+claude mcp add ableton -- uvx remix-mcp
+```
+
+### Tools Not Available
+
+If Claude says it can't find Ableton tools:
+
+1. Restart Claude completely
+2. Check the server is properly configured
+3. Verify remix-mcp is in your PATH or using full path
+
+## Still Having Issues?
+
+1. **Check remix-mcp status**:
+   ```bash
+   remix-mcp status
+   ```
+
+2. **Enable logging** (for debugging):
+   ```bash
+   RUST_LOG=debug remix-mcp serve
+   ```
+
+3. **Report an issue**: [GitHub Issues](https://github.com/christopherwxyz/remix-mcp/issues)

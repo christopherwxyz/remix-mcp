@@ -1,0 +1,91 @@
+# Installation
+
+## Installing remix-mcp
+
+### Via uv (Recommended)
+
+[uv](https://docs.astral.sh/uv/) is a fast Python package installer that can run Rust binaries:
+
+```bash
+uvx remix-mcp install
+```
+
+This downloads and runs the latest release automatically.
+
+### Download Binary
+
+Download pre-built binaries for your platform from [GitHub Releases](https://github.com/christopherwxyz/remix-mcp/releases):
+
+- **macOS (Apple Silicon)**: `remix-mcp-aarch64-apple-darwin.tar.gz`
+- **macOS (Intel)**: `remix-mcp-x86_64-apple-darwin.tar.gz`
+- **Linux**: `remix-mcp-x86_64-unknown-linux-gnu.tar.gz`
+- **Windows**: `remix-mcp-x86_64-pc-windows-msvc.zip`
+
+Extract and add to your PATH.
+
+### Build from Source
+
+Requires [Rust](https://rustup.rs/):
+
+```bash
+git clone --recursive https://github.com/christopherwxyz/remix-mcp
+cd remix-mcp
+cargo build --release
+```
+
+The binary will be at `target/release/remix-mcp`.
+
+## Installing AbletonOSC
+
+AbletonOSC is a Remote Script that runs inside Ableton Live, exposing its API over OSC.
+
+### Automatic Installation
+
+```bash
+remix-mcp install
+```
+
+This copies the AbletonOSC folder to your Ableton Remote Scripts directory:
+
+| Platform | Path |
+|----------|------|
+| macOS | `~/Music/Ableton/User Library/Remote Scripts/` |
+| Windows | `%USERPROFILE%\Documents\Ableton\User Library\Remote Scripts\` |
+
+### Enable in Ableton
+
+1. **Restart** Ableton Live (required after installing scripts)
+2. Open **Preferences** (`Cmd+,` / `Ctrl+,`)
+3. Navigate to **Link/Tempo/MIDI**
+4. Under **Control Surface**, select **AbletonOSC**
+
+:::tip
+Look for `AbletonOSC: Listening for OSC on port 11000` in the status bar to confirm it's working.
+:::
+
+### Check Status
+
+Verify installation:
+
+```bash
+remix-mcp status
+```
+
+### Reinstall
+
+Force reinstall if needed:
+
+```bash
+remix-mcp install --force
+```
+
+## Network Ports
+
+remix-mcp communicates with AbletonOSC over UDP:
+
+| Port | Direction | Purpose |
+|------|-----------|---------|
+| 11000 | remix-mcp -> Ableton | Send OSC commands |
+| 11001 | Ableton -> remix-mcp | Receive responses |
+
+Ensure these ports are not blocked by firewalls or used by other applications.

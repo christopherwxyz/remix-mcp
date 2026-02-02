@@ -88,3 +88,23 @@ loc:
 # Show tool count
 tools:
     @grep -r '#\[tool(' src/tools/*.rs | grep -v tool_router | wc -l | tr -d ' '
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Documentation (Vocs)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Install docs dependencies
+docs-install:
+    cd docs && pnpm install
+
+# Start docs dev server
+docs-dev:
+    cd docs && pnpm dev
+
+# Build docs for production
+docs-build:
+    cd docs && pnpm build
+
+# Preview production docs build
+docs-preview:
+    cd docs && pnpm preview

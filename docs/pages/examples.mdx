@@ -1,0 +1,86 @@
+# Examples
+
+Practical examples of using remix-mcp with Claude to create music in Ableton Live.
+
+## Building a track from scratch
+
+```
+You: Create a chill lo-fi beat at 85 BPM
+
+Claude: I'll set up a relaxed lo-fi track for you...
+
+[Sets tempo to 85 BPM]
+[Creates 3 tracks:]
+  - Keys (Drift synth with warm pad)
+  - Bass (low sine bass)
+  - Drums (laid-back boom bap pattern)
+
+[Fires all clips, starts playback]
+```
+
+## Melodies
+
+```
+You: Create a C major scale
+
+Claude: [Creates MIDI track, loads Drift, adds notes C-D-E-F-G-A-B-C]
+```
+
+```
+You: Create a I-V-vi-IV progression in C major
+
+Claude: [Creates track with C, G, Am, F chords over 4 bars]
+```
+
+## Drums
+
+```
+You: Create a basic house beat at 120 BPM
+
+Claude: [Creates kick on 1-2-3-4, snare on 2-4, hi-hats on 8ths]
+```
+
+```
+You: Add some swing to the hi-hats
+
+Claude: [Adjusts timing to add groove]
+```
+
+## Effects
+
+```
+You: Add reverb and delay to the selected track
+
+Claude: [Loads Reverb and Delay audio effects to the track]
+```
+
+## Synthesizers vs samplers
+
+When creating MIDI tracks, Claude loads **Drift** by default (a synthesizer that generates sound immediately).
+
+| Type | Examples | Sounds immediately? |
+|------|----------|---------------------|
+| Synthesizers | Drift, Analog, Wavetable | Yes |
+| Samplers | Simpler, Sampler | No (needs samples) |
+
+:::warning
+If you're not hearing sound from a MIDI track, check if the instrument is a sampler that needs samples loaded.
+:::
+
+## Session view vs arrangement view
+
+Ableton has two main views (press **Tab** to toggle):
+
+| Session view | Arrangement view |
+|--------------|------------------|
+| Clip grid for launching clips | Linear timeline |
+| Great for jamming | Great for mixing |
+
+remix-mcp creates clips in **Session View** by default.
+
+## Ideas to try
+
+- "Create a 4-chord EDM progression and add a sidechain compressor"
+- "Build a minimal techno loop with a hypnotic bassline"
+- "Create a jazz chord progression with voice leading"
+- "Duplicate the current scene and transpose all clips up a 5th"

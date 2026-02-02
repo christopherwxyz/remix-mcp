@@ -1,0 +1,172 @@
+# Clip Tools
+
+Create, trigger, and edit clips and MIDI notes.
+
+## Firing Clips
+
+### `fire_clip`
+Start playing a clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track containing the clip |
+| `clip_index` | integer | Clip slot index |
+
+### `stop_clip`
+Stop a playing clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip slot index |
+
+### `fire_clip_slot`
+Fire a clip slot (works even if empty).
+
+## Creating Clips
+
+### `create_clip`
+Create an empty MIDI clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip slot index |
+| `length` | float | Length in beats (default: 4.0) |
+
+**Example**:
+```
+create_clip(track_index: 0, clip_index: 0, length: 8.0)
+```
+
+### `duplicate_clip`
+Duplicate a clip to another slot.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Source clip |
+| `target_clip_index` | integer | Destination slot |
+
+### `delete_clip`
+Delete a clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip to delete |
+
+## Clip Info
+
+### `list_clips`
+Get all clips on a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+
+### `get_clip_name` / `set_clip_name`
+Get or set clip name.
+
+### `get_clip_length`
+Get clip length in beats.
+
+### `get_clip_color` / `set_clip_color`
+Get or set clip color.
+
+## MIDI Notes
+
+### `add_midi_notes`
+Add MIDI notes to a clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip index |
+| `notes` | array | Array of note objects |
+
+Each note object:
+```json
+{
+  "pitch": 60,       // MIDI note (0-127, 60 = C4)
+  "start": 0.0,      // Start time in beats
+  "duration": 1.0,   // Duration in beats
+  "velocity": 100,   // Velocity (1-127)
+  "mute": false      // Optional
+}
+```
+
+**Example**: Add a C major chord
+```
+add_midi_notes(
+  track_index: 0,
+  clip_index: 0,
+  notes: [
+    { pitch: 60, start: 0, duration: 4, velocity: 100 },  // C
+    { pitch: 64, start: 0, duration: 4, velocity: 100 },  // E
+    { pitch: 67, start: 0, duration: 4, velocity: 100 }   // G
+  ]
+)
+```
+
+### `get_midi_notes`
+Get all MIDI notes in a clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip index |
+
+### `remove_midi_notes`
+Remove notes from a clip.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip index |
+| `start` | float? | Start beat (optional filter) |
+| `end` | float? | End beat (optional filter) |
+| `pitch_min` | integer? | Min pitch (optional filter) |
+| `pitch_max` | integer? | Max pitch (optional filter) |
+
+### `replace_midi_notes`
+Replace all notes in a clip.
+
+## Loop Settings
+
+### `get_clip_looping` / `set_clip_looping`
+Get or set whether clip loops.
+
+### `get_clip_loop_start` / `set_clip_loop_start`
+Get or set loop start point.
+
+### `get_clip_loop_end` / `set_clip_loop_end`
+Get or set loop end point.
+
+## Common Workflows
+
+### Create a Simple Melody
+
+```
+1. create_clip(0, 0, length: 4)
+2. add_midi_notes(0, 0, [
+     { pitch: 60, start: 0, duration: 0.5, velocity: 100 },
+     { pitch: 62, start: 0.5, duration: 0.5, velocity: 100 },
+     { pitch: 64, start: 1, duration: 0.5, velocity: 100 },
+     { pitch: 65, start: 1.5, duration: 0.5, velocity: 100 },
+     { pitch: 67, start: 2, duration: 2, velocity: 100 }
+   ])
+3. fire_clip(0, 0)
+```
+
+### MIDI Note Reference
+
+| Note | MIDI | Note | MIDI |
+|------|------|------|------|
+| C3 | 48 | C4 | 60 |
+| D3 | 50 | D4 | 62 |
+| E3 | 52 | E4 | 64 |
+| F3 | 53 | F4 | 65 |
+| G3 | 55 | G4 | 67 |
+| A3 | 57 | A4 | 69 |
+| B3 | 59 | B4 | 71 |

@@ -1,0 +1,36 @@
+# Acknowledgements
+
+remix-mcp is built on the shoulders of giants.
+
+## AbletonOSC
+
+This project would not be possible without [AbletonOSC](https://github.com/ideoforms/AbletonOSC) by [Daniel Jones (ideoforms)](https://github.com/ideoforms). AbletonOSC is the Python Remote Script that runs inside Ableton Live and exposes the Live Object Model via OSC, enabling external control of the DAW.
+
+## Dependencies
+
+### Core
+
+- [rmcp](https://github.com/anthropics/rmcp) - Rust implementation of the Model Context Protocol
+- [rosc](https://github.com/klingtnet/rosc) - OSC (Open Sound Control) library for Rust
+- [tokio](https://tokio.rs) - Async runtime for Rust
+
+### CLI
+
+- [clap](https://github.com/clap-rs/clap) - Command line argument parser
+- [indicatif](https://github.com/console-rs/indicatif) - Progress bars and spinners
+- [console](https://github.com/console-rs/console) - Terminal styling
+
+### Serialization
+
+- [serde](https://serde.rs) - Serialization framework
+- [schemars](https://github.com/GREsau/schemars) - JSON Schema generation
+
+### Error handling
+
+- [color-eyre](https://github.com/eyre-rs/eyre) - Colorful error reports
+- [thiserror](https://github.com/dtolnay/thiserror) - Derive macro for errors
+
+### Testing
+
+- [insta](https://insta.rs) - Snapshot testing
+- [rstest](https://github.com/la10736/rstest) - Parameterized tests

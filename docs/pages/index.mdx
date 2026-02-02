@@ -1,0 +1,38 @@
+---
+layout: landing
+showLogo: false
+---
+
+import { HomePage } from 'vocs/components'
+
+<HomePage.Root>
+  <HomePage.Logo />
+  <HomePage.Tagline>Control Ableton Live with AI</HomePage.Tagline>
+  <HomePage.Buttons>
+    <HomePage.Button href="/getting-started" variant="accent">Get started</HomePage.Button>
+  </HomePage.Buttons>
+</HomePage.Root>
+
+:::code-group
+
+```bash [Claude Code]
+claude mcp add ableton -- uvx remix-mcp
+```
+
+```json [Claude Desktop]
+{
+  "mcpServers": {
+    "ableton": {
+      "command": "uvx",
+      "args": ["remix-mcp"]
+    }
+  }
+}
+```
+
+```bash [Local]
+cargo install remix-mcp
+remix-mcp install
+```
+
+:::

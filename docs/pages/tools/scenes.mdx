@@ -1,0 +1,96 @@
+# Scene Tools
+
+Manage and trigger scenes in Session View.
+
+## Firing Scenes
+
+### `fire_scene`
+Launch all clips in a scene.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scene_index` | integer | Scene to fire |
+
+### `stop_all_clips`
+Stop all playing clips.
+
+## Scene Management
+
+### `list_scenes`
+Get information about all scenes.
+
+**Returns**: Array of scene info objects.
+
+### `create_scene`
+Create a new empty scene.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `index` | integer? | Position (-1 = end) |
+
+### `delete_scene`
+Delete a scene.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scene_index` | integer | Scene to delete |
+
+### `duplicate_scene`
+Duplicate a scene with all its clips.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scene_index` | integer | Scene to duplicate |
+
+## Scene Properties
+
+### `get_scene_name` / `set_scene_name`
+Get or set scene name.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scene_index` | integer | Scene index |
+| `name` | string | New name (for set) |
+
+### `get_scene_tempo` / `set_scene_tempo`
+Get or set scene tempo (if different from master).
+
+### `get_scene_color` / `set_scene_color`
+Get or set scene color.
+
+## Common Workflows
+
+### Set Up Song Sections
+
+```
+1. create_scene(0)                  // Intro
+2. set_scene_name(0, "Intro")
+3. create_scene(1)                  // Verse
+4. set_scene_name(1, "Verse")
+5. create_scene(2)                  // Chorus
+6. set_scene_name(2, "Chorus")
+```
+
+### Live Performance
+
+```
+1. fire_scene(0)    // Start with intro
+2. // Wait...
+3. fire_scene(1)    // Transition to verse
+4. // Wait...
+5. fire_scene(2)    // Hit the chorus
+```
+
+### Scene Color Coding
+
+Use colors to organize your arrangement:
+- **Green**: Intros/Outros
+- **Blue**: Verses
+- **Red**: Choruses
+- **Yellow**: Bridges
+
+```
+set_scene_color(0, 0x00FF00)  // Green intro
+set_scene_color(1, 0x0000FF)  // Blue verse
+set_scene_color(2, 0xFF0000)  // Red chorus
+```

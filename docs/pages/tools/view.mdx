@@ -1,0 +1,83 @@
+# View Tools
+
+Control selection and navigation in Ableton's UI.
+
+## Track Selection
+
+### `select_track`
+Select a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track to select |
+
+### `get_selected_track`
+Get the currently selected track index.
+
+**Returns**: `integer`
+
+## Clip Selection
+
+### `select_clip`
+Select a clip slot.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `clip_index` | integer | Clip slot index |
+
+### `get_selected_clip`
+Get the currently selected clip.
+
+**Returns**: `{ track_index, clip_index }`
+
+## Scene Selection
+
+### `select_scene`
+Select a scene.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scene_index` | integer | Scene to select |
+
+### `get_selected_scene`
+Get the currently selected scene index.
+
+**Returns**: `integer`
+
+## Device Selection
+
+### `select_device`
+Select a device on a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device to select |
+
+## Common Workflows
+
+### Navigate to a Specific Clip
+
+```
+1. select_track(2)       // Go to track 3
+2. select_clip(2, 4)     // Select clip at scene 5
+```
+
+### Work with Selected Items
+
+Many operations work with the "selected" item:
+```
+1. select_track(0)
+2. load_default_instrument()  // Loads on selected track
+```
+
+### Programmatic Navigation
+
+Build a workflow that navigates through your arrangement:
+```
+for scene in range(4):
+    select_scene(scene)
+    fire_scene(scene)
+    // Wait for scene to play...
+```

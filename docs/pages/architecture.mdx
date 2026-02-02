@@ -1,0 +1,134 @@
+# Architecture
+
+How remix-mcp connects AI assistants to Ableton Live.
+
+## Overview
+
+```
+Claude/Client <--stdio/JSON-RPC--> remix-mcp <--UDP/OSC--> AbletonOSC <--> Ableton Live
+```
+
+remix-mcp is the bridge between MCP clients (like Claude) and Ableton Live. It translates MCP tool calls into OSC messages that AbletonOSC understands.
+
+## Components
+
+### MCP Server (remix-mcp)
+
+A Rust binary that implements the Model Context Protocol:
+
+- **Protocol**: JSON-RPC over stdio
+- **Runtime**: Tokio async
+- **Framework**: `rmcp` crate
+
+The server exposes 266 tools that Claude can call. Each tool:
+1. Validates parameters
+2. Sends OSC messages to AbletonOSC
+3. Waits for and parses responses
+4. Returns results to Claude
+
+### AbletonOSC
+
+A Python Remote Script that runs inside Ableton Live:
+
+- **Location**: Ableton's Remote Scripts folder
+- **Protocol**: UDP/OSC on ports 11000 (receive) and 11001 (send)
+- **API**: Exposes Ableton's Live Object Model
+
+AbletonOSC translates OSC messages into calls to Ableton's Python API.
+
+### Why OSC?
+
+Ableton's Python API (Live Object Model) runs in a sandboxed interpreter inside Ableton. External processes cannot call it directly.
+
+OSC (Open Sound Control) over UDP provides:
+- **Low latency**: Fast enough for real-time control
+- **Loose coupling**: No direct process communication needed
+- **Standard protocol**: Well-supported in music software
+
+## Data Flow
+
+### Example: Set Tempo
+
+```
+1. User: "Set tempo to 128 BPM"
+2. Claude: Calls set_tempo(tempo: 128)
+3. MCP: JSON-RPC request to remix-mcp
+4. remix-mcp: Sends OSC /live/song/set/tempo 128.0
+5. AbletonOSC: Receives, calls song.tempo = 128.0
+6. Ableton: Tempo changes
+7. remix-mcp: Returns success
+8. Claude: "Done! Tempo is now 128 BPM"
+```
+
+### Example: Query
+
+```
+1. User: "What's the current tempo?"
+2. Claude: Calls get_tempo()
+3. remix-mcp: Sends OSC /live/song/get/tempo
+4. AbletonOSC: Reads song.tempo, sends response
+5. remix-mcp: Parses 120.0 from response
+6. Claude: "The tempo is 120 BPM"
+```
+
+## Code Structure
+
+```
+src/
+├── main.rs          # CLI entry point
+├── lib.rs           # Library exports
+├── server.rs        # MCP ServerHandler
+├── error.rs         # Error types
+├── installer.rs     # AbletonOSC installer
+├── osc/
+│   ├── client.rs    # Async UDP OSC client
+│   ├── message.rs   # OSC message helpers
+│   └── response.rs  # Response parsing
+├── tools/
+│   ├── transport.rs # Playback tools
+│   ├── tracks.rs    # Track tools
+│   ├── clips.rs     # Clip tools
+│   ├── scenes.rs    # Scene tools
+│   ├── devices.rs   # Device tools
+│   ├── song.rs      # Song tools
+│   ├── view.rs      # Selection tools
+│   ├── cue_points.rs
+│   └── browser.rs   # Browser tools
+└── types/
+    ├── params.rs    # Data types
+    ├── tool_params.rs # Tool parameters
+    └── ids.rs       # ID types
+```
+
+## OSC Protocol
+
+OSC addresses follow the pattern: `/live/{object}/{action}/{property}`
+
+| Pattern | Purpose | Example |
+|---------|---------|---------|
+| `/live/song/start_playing` | Action | Start playback |
+| `/live/song/get/tempo` | Getter | Read tempo |
+| `/live/song/set/tempo` | Setter | Change tempo |
+| `/live/track/get/volume` | Indexed | Get track N volume |
+
+## Error Handling
+
+| Error | Cause | Recovery |
+|-------|-------|----------|
+| `InvalidParameter` | Bad input | Fix parameters |
+| `InvalidResponse` | Unexpected OSC data | Check Ableton state |
+| `Timeout` | No response (5s) | Check connection |
+| `Network` | UDP/socket error | Check ports |
+
+## Performance
+
+- **Latency**: ~5-20ms per operation (UDP roundtrip)
+- **Throughput**: Hundreds of operations per second
+- **Memory**: ~10MB typical
+- **CPU**: Minimal (async I/O)
+
+## Security
+
+- **Local only**: Binds to 127.0.0.1
+- **No auth**: Trusts localhost connections
+- **Sandboxed**: Only affects Ableton, no system access

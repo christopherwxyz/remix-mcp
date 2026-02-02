@@ -1,0 +1,88 @@
+# Getting started
+
+Remix is a Rust MCP (Model Context Protocol) server that enables AI assistants to control Ableton Live via OSC.
+
+## Prerequisites
+
+- **Ableton Live** (Suite, Standard, or Intro)
+- **Claude Desktop** or **Claude Code**
+- One of:
+  - [uv](https://docs.astral.sh/uv/) (recommended)
+  - Rust toolchain for building from source
+
+## Quickstart
+
+### 1. Install Remix
+
+The easiest way is via uv:
+
+```bash
+uvx remix-mcp install
+```
+
+Or download a pre-built binary from [GitHub Releases](https://github.com/christopherwxyz/remix-mcp/releases).
+
+### 2. Install AbletonOSC
+
+Run the installer:
+
+```bash
+remix-mcp install
+```
+
+Then enable it in Ableton:
+
+1. Restart Ableton Live
+2. Open **Preferences** (`Cmd+,` / `Ctrl+,`)
+3. Go to **Link/Tempo/MIDI**
+4. Under **Control Surface**, select **AbletonOSC**
+
+You should see in the status bar:
+```
+AbletonOSC: Listening for OSC on port 11000
+```
+
+### 3. Configure Your AI Client
+
+::::steps
+
+#### Claude Desktop
+
+1. Open Claude Desktop Settings > Developer
+2. Click "Edit Config" to open `claude_desktop_config.json`
+3. Add the server:
+
+```json
+{
+  "mcpServers": {
+    "ableton": {
+      "command": "uvx",
+      "args": ["remix-mcp"]
+    }
+  }
+}
+```
+
+4. Restart Claude Desktop
+
+#### Claude Code
+
+```bash
+claude mcp add ableton -- uvx remix-mcp
+```
+
+::::
+
+## Verify Installation
+
+Open Claude and try:
+
+> "Get the current tempo from Ableton"
+
+If connected, Claude will respond with the current tempo. If not, see [Troubleshooting](/troubleshooting).
+
+## Next Steps
+
+- [Examples](/examples) - See what you can build
+- [Tools Reference](/tools) - Browse all 266 tools
+- [Architecture](/architecture) - Understand how it works

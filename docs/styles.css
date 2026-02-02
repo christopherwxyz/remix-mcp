@@ -1,0 +1,40 @@
+/* remix-mcp docs theme */
+
+:root {
+  --remix-blue: #007AFF;
+  --remix-red: #FF0000;
+
+  --vocs-color_codeBlockBackground: #f1f5f9;
+  --vocs-color_codeTitleBackground: #e2e8f0;
+  --vocs-color_link: var(--remix-blue);
+  --vocs-color_linkHover: #005ecb;
+  --vocs-color_backgroundAccentText: #ffffff;
+}
+
+:root.dark {
+  --vocs-color_codeBlockBackground: #1a1a24;
+  --vocs-color_codeTitleBackground: #252532;
+  --vocs-color_link: var(--remix-blue);
+  --vocs-color_linkHover: #4da3ff;
+  --vocs-color_background: #0a0a0f;
+  --vocs-color_backgroundAccentText: #ffffff;
+}
+
+.vocs_H1,
+.vocs_Heading[data-level="1"] {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.vocs_Callout[data-type="danger"],
+.vocs_Callout[data-type="warning"] {
+  --vocs-color_calloutBorder: var(--remix-red);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgba(0, 122, 255, 0.3);
+}

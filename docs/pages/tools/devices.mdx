@@ -1,0 +1,104 @@
+# Device Tools
+
+Control instruments and effects on tracks.
+
+## Listing Devices
+
+### `list_devices`
+Get all devices on a track.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+
+**Returns**: Array of device info including names and parameter counts.
+
+### `get_device_name`
+Get a device's name.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device position in chain |
+
+## Device Parameters
+
+### `get_device_parameter`
+Get a parameter value.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device index |
+| `parameter_index` | integer | Parameter index |
+
+### `set_device_parameter`
+Set a parameter value.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device index |
+| `parameter_index` | integer | Parameter index |
+| `value` | float | New value (0.0 - 1.0 normalized) |
+
+### `list_device_parameters`
+Get all parameters for a device.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device index |
+
+**Returns**: Array with parameter names, values, min, max.
+
+## Device State
+
+### `get_device_enabled` / `set_device_enabled`
+Get or set whether device is enabled (bypassed).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `track_index` | integer | Track index |
+| `device_index` | integer | Device index |
+| `enabled` | boolean | Enable state (for set) |
+
+## Common Workflows
+
+### Adjust Reverb Decay
+
+```
+1. list_devices(0)              // Find device indices
+2. list_device_parameters(0, 1) // List reverb params
+3. set_device_parameter(0, 1, 2, 0.7)  // Adjust decay
+```
+
+### Bypass an Effect
+
+```
+set_device_enabled(0, 1, false)  // Bypass device 1 on track 0
+```
+
+### Automate Parameters
+
+While automation isn't directly supported, you can create interesting effects by rapidly changing parameters:
+
+```
+// Sweep a filter cutoff
+for value in [0.1, 0.3, 0.5, 0.7, 0.9]:
+    set_device_parameter(0, 1, 3, value)
+```
+
+## Device Chain Order
+
+Devices are indexed by their position in the chain:
+
+```
+Track 0:
+  [0] Drift (Instrument)
+  [1] Auto Filter (Effect)
+  [2] Reverb (Effect)
+  [3] Limiter (Effect)
+```
+
+The instrument is typically at index 0, followed by effects.

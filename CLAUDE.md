@@ -11,12 +11,18 @@ Claude/Client <--stdio/JSON-RPC--> remix-mcp <--UDP/OSC--> AbletonOSC <--> Ablet
 ```
 
 - **MCP Server**: Rust binary using `rmcp` crate, communicates via stdio
-- **OSC Client**: Async UDP client using `rosc` crate
-- **AbletonOSC**: Python Remote Script running inside Ableton (bundled as git submodule)
+- **OSC Client**: Async UDP client using `rosc` crate, lazy-initialized via `OscHandle`
+- **AbletonOSC**: Python Remote Script running inside Ableton (bundled as git submodule, [our fork](https://github.com/christopherwxyz/AbletonOSC))
 
 ### Why OSC?
 
-Ableton's Python API (Live Object Model) runs inside Ableton's sandboxed Python interpreter. External processes cannot call it directly. AbletonOSC bridges this gap via UDP/OSC on ports 11000 (send) and 11001 (receive).
+Ableton's Python API (Live Object Model) runs inside Ableton's sandboxed Python interpreter. External processes cannot call it directly. AbletonOSC bridges this gap via UDP/OSC on port 11000.
+
+### Lazy OSC & Multi-Instance Support
+
+`AbletonServer::new()` is sync and infallible — no sockets are opened until the first tool call. This ensures the MCP handshake always succeeds even when Ableton is not running.
+
+The OSC layer uses a single UDP socket per instance (ephemeral port, no fixed port). Our AbletonOSC fork replies to the sender's actual address instead of hardcoded port 11001, so multiple remix-mcp instances (e.g. Claude Desktop + Claude Code) can control Ableton simultaneously without port contention.
 
 ## Development Commands
 
@@ -67,7 +73,7 @@ src/
 ├── error.rs         # Error types
 ├── installer.rs     # AbletonOSC installer logic
 ├── osc/
-│   ├── client.rs    # Async UDP OSC client
+│   ├── client.rs    # OscClient (single-socket UDP) + OscHandle (lazy init wrapper)
 │   ├── message.rs   # OSC message helpers
 │   └── response.rs  # FromOsc trait for parsing responses
 ├── tools/

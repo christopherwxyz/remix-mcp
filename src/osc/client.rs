@@ -38,10 +38,7 @@ impl OscClient {
         let socket = UdpSocket::bind("127.0.0.1:0").await?;
         let ableton_addr: SocketAddr = format!("127.0.0.1:{ABLETON_OSC_PORT}").parse().unwrap();
 
-        debug!(
-            port = socket.local_addr()?.port(),
-            "OSC client initialized"
-        );
+        debug!(port = socket.local_addr()?.port(), "OSC client initialized");
 
         Ok(Self {
             socket,
@@ -81,8 +78,7 @@ impl OscClient {
         // Wait for response on the same socket we sent from
         let mut buf = [0u8; 65536];
         let (len, _src) =
-            tokio::time::timeout(self.response_timeout, self.socket.recv_from(&mut buf))
-                .await??;
+            tokio::time::timeout(self.response_timeout, self.socket.recv_from(&mut buf)).await??;
 
         let (_, packet) = decoder::decode_udp(&buf[..len])?;
         trace!(?packet, "Received OSC response");
@@ -117,12 +113,9 @@ impl OscClient {
     /// Clear any pending messages in the receive buffer.
     async fn clear_recv_buffer(&self) {
         let mut buf = [0u8; 1024];
-        while tokio::time::timeout(
-            Duration::from_millis(1),
-            self.socket.recv_from(&mut buf),
-        )
-        .await
-        .is_ok()
+        while tokio::time::timeout(Duration::from_millis(1), self.socket.recv_from(&mut buf))
+            .await
+            .is_ok()
         {}
     }
 
@@ -190,11 +183,7 @@ impl OscHandle {
     }
 
     /// Send an OSC message and collect multiple responses until timeout.
-    pub async fn query_all(
-        &self,
-        addr: &str,
-        args: Vec<OscType>,
-    ) -> Result<Vec<OscPacket>, Error> {
+    pub async fn query_all(&self, addr: &str, args: Vec<OscType>) -> Result<Vec<OscPacket>, Error> {
         self.client().await?.query_all(addr, args).await
     }
 
@@ -252,9 +241,7 @@ mod tests {
     async fn handle_send_delegates_to_client() {
         let handle = OscHandle::new();
         // send is fire-and-forget over UDP; it should not error even without Ableton
-        let result = handle
-            .send("/live/test", vec![OscType::Int(1)])
-            .await;
+        let result = handle.send("/live/test", vec![OscType::Int(1)]).await;
         assert!(result.is_ok());
     }
 
@@ -313,28 +300,32 @@ mod tests {
         });
         let query_bytes = encoder::encode(&query).unwrap();
 
-        client_a.0.send_to(&query_bytes, ableton_addr).await.unwrap();
-        client_b.0.send_to(&query_bytes, ableton_addr).await.unwrap();
+        client_a
+            .0
+            .send_to(&query_bytes, ableton_addr)
+            .await
+            .unwrap();
+        client_b
+            .0
+            .send_to(&query_bytes, ableton_addr)
+            .await
+            .unwrap();
 
         // --- Each client reads its own response ---
         let mut buf_a = [0u8; 65536];
         let mut buf_b = [0u8; 65536];
 
-        let (len_a, _) = tokio::time::timeout(
-            Duration::from_secs(1),
-            client_a.0.recv_from(&mut buf_a),
-        )
-        .await
-        .expect("client A timed out")
-        .unwrap();
+        let (len_a, _) =
+            tokio::time::timeout(Duration::from_secs(1), client_a.0.recv_from(&mut buf_a))
+                .await
+                .expect("client A timed out")
+                .unwrap();
 
-        let (len_b, _) = tokio::time::timeout(
-            Duration::from_secs(1),
-            client_b.0.recv_from(&mut buf_b),
-        )
-        .await
-        .expect("client B timed out")
-        .unwrap();
+        let (len_b, _) =
+            tokio::time::timeout(Duration::from_secs(1), client_b.0.recv_from(&mut buf_b))
+                .await
+                .expect("client B timed out")
+                .unwrap();
 
         // --- Verify each response contains that client's own port ---
         let (_, pkt_a) = decoder::decode_udp(&buf_a[..len_a]).unwrap();
@@ -356,8 +347,14 @@ mod tests {
         };
 
         // The mock echoed back the sender's port — each client should see its own
-        assert_eq!(port_in_a, client_a.1, "client A got a response meant for someone else");
-        assert_eq!(port_in_b, client_b.1, "client B got a response meant for someone else");
+        assert_eq!(
+            port_in_a, client_a.1,
+            "client A got a response meant for someone else"
+        );
+        assert_eq!(
+            port_in_b, client_b.1,
+            "client B got a response meant for someone else"
+        );
 
         mock_handle.await.unwrap();
     }

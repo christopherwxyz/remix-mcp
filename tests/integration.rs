@@ -5,18 +5,17 @@
 //! Run with:
 //!   cargo test --test integration -- --ignored --test-threads=1
 //!
-//! Note: `--test-threads=1` is required because `AbletonOSC` always sends
-//! responses to port 11001, so tests must run sequentially.
+//! Note: `--test-threads=1` is recommended to avoid race conditions when
+//! multiple tests interact with the same Ableton Live instance.
 //!
 //! For a quick smoke test:
-//!   cargo test --test integration -- --ignored --test-threads=1 `test_basic`
+//!   cargo test --test integration -- --ignored --test-threads=1 test_basic
 
 use remix_mcp::osc::OscClient;
 use rosc::{OscPacket, OscType};
 use tokio::time::{Duration, sleep};
 
-/// Create a test client using the fixed response port (11001).
-/// `AbletonOSC` always sends responses to this port.
+/// Create a test client bound to an ephemeral port.
 async fn create_test_client() -> OscClient {
     OscClient::new().await.expect("Failed to create OSC client")
 }
@@ -54,10 +53,10 @@ fn extract_bool_at_index(packets: Vec<OscPacket>, index: usize) -> Option<bool> 
 // Basic Connection Tests
 // ============================================================================
 
-/// Test that we can create an OSC client (uses dynamic port for parallel safety).
+/// Test that we can create an OSC client (uses ephemeral port).
 #[tokio::test]
 async fn test_osc_client_creation() {
-    let client = OscClient::with_response_port(0).await;
+    let client = OscClient::new().await;
     assert!(
         client.is_ok(),
         "Failed to create OSC client: {:?}",

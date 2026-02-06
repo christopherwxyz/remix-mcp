@@ -158,8 +158,8 @@ async fn cmd_serve(skip_install_check: bool) -> Result<()> {
 
     info!("Starting Ableton MCP Server v{}", env!("CARGO_PKG_VERSION"));
 
-    // Create the server
-    let server = AbletonServer::new().await?;
+    // Create the server (infallible — OSC connects lazily on first tool call)
+    let server = AbletonServer::new();
 
     // Run the server with stdio transport
     let service = server.serve(rmcp::transport::stdio()).await?;

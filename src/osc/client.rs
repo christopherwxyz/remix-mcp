@@ -197,14 +197,14 @@ impl OscHandle {
 mod tests {
     use super::*;
 
-    /// `OscHandle::new()` creates no sockets (inner OnceCell is empty).
+    /// `OscHandle::new()` creates no sockets (inner `OnceCell` is empty).
     #[test]
     fn handle_new_does_not_connect() {
         let handle = OscHandle::new();
         assert!(!handle.inner.initialized());
     }
 
-    /// Calling `client()` populates the OnceCell.
+    /// Calling `client()` populates the `OnceCell`.
     #[tokio::test]
     async fn handle_lazily_connects_on_first_access() {
         let handle = OscHandle::new();
@@ -215,7 +215,7 @@ mod tests {
         assert!(handle.inner.initialized());
     }
 
-    /// Two `client()` calls return the same port (OnceCell caching).
+    /// Two `client()` calls return the same port (`OnceCell` caching).
     #[tokio::test]
     async fn handle_returns_same_client_on_repeated_access() {
         let handle = OscHandle::new();
@@ -225,7 +225,7 @@ mod tests {
         assert_eq!(port1, port2);
     }
 
-    /// Multiple OscHandles each get their own port (no contention).
+    /// Multiple `OscHandle`s each get their own port (no contention).
     #[tokio::test]
     async fn multiple_handles_get_distinct_ports() {
         let handle1 = OscHandle::new();
@@ -245,8 +245,8 @@ mod tests {
         assert!(result.is_ok());
     }
 
-    /// Spin up a mock AbletonOSC server that replies to the sender's address
-    /// (mirroring our AbletonOSC patch). Two OscClients query it concurrently
+    /// Spin up a mock `AbletonOSC` server that replies to the sender's address
+    /// (mirroring our `AbletonOSC` patch). Two `OscClient`s query it concurrently
     /// and each receives its own response — proving multi-instance works.
     #[tokio::test]
     async fn two_clients_receive_own_responses_from_mock_server() {
@@ -336,14 +336,14 @@ mod tests {
                 Some(OscType::Int(p)) => *p as u16,
                 _ => panic!("unexpected response format"),
             },
-            _ => panic!("expected message"),
+            OscPacket::Bundle(_) => panic!("expected message"),
         };
         let port_in_b = match pkt_b {
             OscPacket::Message(m) => match m.args.first() {
                 Some(OscType::Int(p)) => *p as u16,
                 _ => panic!("unexpected response format"),
             },
-            _ => panic!("expected message"),
+            OscPacket::Bundle(_) => panic!("expected message"),
         };
 
         // The mock echoed back the sender's port — each client should see its own

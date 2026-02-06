@@ -9,7 +9,7 @@
 //! multiple tests interact with the same Ableton Live instance.
 //!
 //! For a quick smoke test:
-//!   cargo test --test integration -- --ignored --test-threads=1 test_basic
+//!   cargo test --test integration -- --ignored --test-threads=1 `test_basic`
 
 use remix_mcp::osc::OscClient;
 use rosc::{OscPacket, OscType};

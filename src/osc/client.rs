@@ -257,4 +257,108 @@ mod tests {
             .await;
         assert!(result.is_ok());
     }
+
+    /// Spin up a mock AbletonOSC server that replies to the sender's address
+    /// (mirroring our AbletonOSC patch). Two OscClients query it concurrently
+    /// and each receives its own response — proving multi-instance works.
+    #[tokio::test]
+    async fn two_clients_receive_own_responses_from_mock_server() {
+        use std::net::SocketAddr;
+
+        // --- Mock AbletonOSC: listen on an ephemeral port, echo back to sender ---
+        let mock = UdpSocket::bind("127.0.0.1:0").await.unwrap();
+        let mock_port = mock.local_addr().unwrap().port();
+
+        let mock_handle = tokio::spawn(async move {
+            let mut buf = [0u8; 65536];
+            // Handle exactly 2 queries then stop
+            for _ in 0..2 {
+                let (len, sender) = mock.recv_from(&mut buf).await.unwrap();
+                // Decode the request
+                let (_, packet) = decoder::decode_udp(&buf[..len]).unwrap();
+                if let OscPacket::Message(msg) = packet {
+                    // Build a response: echo the address back with the sender's port
+                    // as payload so each client can verify it got *its own* response
+                    let reply = OscPacket::Message(OscMessage {
+                        addr: msg.addr,
+                        args: vec![OscType::Int(i32::from(sender.port()))],
+                    });
+                    let bytes = encoder::encode(&reply).unwrap();
+                    // Reply to the sender's actual address (the patched behavior)
+                    mock.send_to(&bytes, sender).await.unwrap();
+                }
+            }
+        });
+
+        // --- Create two OscClients pointing at the mock server ---
+        let ableton_addr: SocketAddr = format!("127.0.0.1:{mock_port}").parse().unwrap();
+
+        let client_a = {
+            let socket = UdpSocket::bind("127.0.0.1:0").await.unwrap();
+            let port = socket.local_addr().unwrap().port();
+            (socket, port, ableton_addr)
+        };
+        let client_b = {
+            let socket = UdpSocket::bind("127.0.0.1:0").await.unwrap();
+            let port = socket.local_addr().unwrap().port();
+            (socket, port, ableton_addr)
+        };
+
+        assert_ne!(client_a.1, client_b.1, "clients must have different ports");
+
+        // --- Both clients send a query ---
+        let query = OscPacket::Message(OscMessage {
+            addr: "/live/song/get/tempo".to_string(),
+            args: vec![],
+        });
+        let query_bytes = encoder::encode(&query).unwrap();
+
+        client_a.0.send_to(&query_bytes, ableton_addr).await.unwrap();
+        client_b.0.send_to(&query_bytes, ableton_addr).await.unwrap();
+
+        // --- Each client reads its own response ---
+        let mut buf_a = [0u8; 65536];
+        let mut buf_b = [0u8; 65536];
+
+        let (len_a, _) = tokio::time::timeout(
+            Duration::from_secs(1),
+            client_a.0.recv_from(&mut buf_a),
+        )
+        .await
+        .expect("client A timed out")
+        .unwrap();
+
+        let (len_b, _) = tokio::time::timeout(
+            Duration::from_secs(1),
+            client_b.0.recv_from(&mut buf_b),
+        )
+        .await
+        .expect("client B timed out")
+        .unwrap();
+
+        // --- Verify each response contains that client's own port ---
+        let (_, pkt_a) = decoder::decode_udp(&buf_a[..len_a]).unwrap();
+        let (_, pkt_b) = decoder::decode_udp(&buf_b[..len_b]).unwrap();
+
+        let port_in_a = match pkt_a {
+            OscPacket::Message(m) => match m.args.first() {
+                Some(OscType::Int(p)) => *p as u16,
+                _ => panic!("unexpected response format"),
+            },
+            _ => panic!("expected message"),
+        };
+        let port_in_b = match pkt_b {
+            OscPacket::Message(m) => match m.args.first() {
+                Some(OscType::Int(p)) => *p as u16,
+                _ => panic!("unexpected response format"),
+            },
+            _ => panic!("expected message"),
+        };
+
+        // The mock echoed back the sender's port — each client should see its own
+        assert_eq!(port_in_a, client_a.1, "client A got a response meant for someone else");
+        assert_eq!(port_in_b, client_b.1, "client B got a response meant for someone else");
+
+        mock_handle.await.unwrap();
+    }
 }

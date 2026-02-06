@@ -15,5 +15,10 @@
   "devDependencies": {
     "@types/react": "^19.1.6",
     "vocs": "^1.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "lodash-es": ">=4.17.23"
+    }
   }
 }
